@@ -1,4 +1,3 @@
-import { Store } from 'vuex'
 import Utils from '../support/Utils'
 import Database, { Models } from '../database/Database'
 import * as Data from '../data'
@@ -30,11 +29,6 @@ export default class Query<T extends Model = Model> {
    * The counter to generate the UID for global hooks.
    */
   static lastHookId: number = 0
-
-  /**
-   * The store instance.
-   */
-  store: Store<any>
 
   /**
    * The database instance.
@@ -137,9 +131,8 @@ export default class Query<T extends Model = Model> {
   /**
    * Create a new Query instance.
    */
-  constructor(store: Store<any>, entity: string) {
-    this.store = store
-    this.database = store.$db()
+  constructor(entity: string) {
+    this.database = new Database();
 
     this.model = this.getModel(entity)
     this.baseModel = this.getBaseModel(entity)
@@ -156,13 +149,12 @@ export default class Query<T extends Model = Model> {
   /**
    * Delete all records from the store.
    */
-  static deleteAll(store: Store<any>): void {
-    const database = store.$db()
+  static deleteAll(database: Database): void {
     const models = database.models()
 
     for (const entity in models) {
       const state = database.getState()[entity]
-      state && new this(store, entity).deleteAll()
+      state && new this(entity).deleteAll()
     }
   }
 
@@ -214,7 +206,7 @@ export default class Query<T extends Model = Model> {
   newQuery(entity?: string): Query {
     entity = entity || this.entity
 
-    return new Query(this.store, entity)
+    return new Query(entity)
   }
 
   /**
@@ -1248,11 +1240,9 @@ export default class Query<T extends Model = Model> {
   /**
    * Commit mutation.
    */
+  // @ts-ignore
   private commit(name: string, payload: any): void {
-    this.store.commit(`${this.database.namespace}/${name}`, {
-      entity: this.baseEntity,
-      ...payload
-    })
+    // If the store is not registered, we'll just ignore the commit.
   }
 
   /**

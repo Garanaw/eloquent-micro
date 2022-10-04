@@ -1,7 +1,5 @@
-import * as Vuex from 'vuex'
 import Utils from '../support/Utils'
 import Uid from '../support/Uid'
-import Container from '../container/Container'
 import Database from '../database/Database'
 import Record from '../data/Record'
 import InstanceOf from '../data/InstanceOf'
@@ -22,6 +20,11 @@ import InheritanceTypes from './contracts/InheritanceTypes'
 import { toAttributes, toJson } from './Serialize'
 
 export default class Model {
+  /**
+   * The Database instance.
+   */
+  static db: Database;
+
   /**
    * The name that is going be used as module name in Vuex Store.
    */
@@ -345,15 +348,15 @@ export default class Model {
   /**
    * Get the store instance from the container.
    */
-  static store(): Vuex.Store<any> {
-    return Container.store
+  static store(): null {
+    return null
   }
 
   /**
    * Get the database instance from store.
    */
   static database(): Database {
-    return this.store().$db()
+    return this.db
   }
 
   /**
@@ -367,25 +370,26 @@ export default class Model {
   /**
    * Call Vuex Getters.
    */
+  // @ts-ignore
   static getters(method: string): any {
-    return this.store().getters[this.namespace(method)]
+    return {}; // this.store().getters[this.namespace(method)]
   }
 
   /**
    * Dispatch Vuex Action.
    */
+  // @ts-ignore
   static dispatch(method: string, payload?: any): Promise<any> {
-    return this.store().dispatch(this.namespace(method), payload)
+    // @ts-ignore
+    return new Promise((resolve, reject) => resolve(payload)); //this.store().dispatch(this.namespace(method), payload)
   }
 
   /**
    * Commit Vuex Mutation.
    */
+  // @ts-ignore
   static commit(callback: (state: State) => void) {
-    this.store().commit(`${this.database().namespace}/$mutate`, {
-      entity: this.entity,
-      callback
-    })
+    // If the store is not present, we'll just ignore the commit.
   }
 
   /**
@@ -784,13 +788,6 @@ export default class Model {
     this.$id = id
 
     return this
-  }
-
-  /**
-   * Get the store instance from the container.
-   */
-  $store(): Vuex.Store<any> {
-    return this.$self().store()
   }
 
   /**

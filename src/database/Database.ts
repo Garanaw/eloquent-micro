@@ -1,4 +1,3 @@
-import { Store, Module, MutationTree } from 'vuex'
 import { mapValues } from '../support/Utils'
 import Schema from '../schema/Schema'
 import Schemas from '../schema/Schemas'
@@ -21,17 +20,17 @@ export interface Entity {
   name: string
   base: string
   model: typeof Model
-  module: Module<any, any>
+  module: {[key: string]: any}
 }
 
 export type Models = Record<string, typeof Model>
-export type Modules = Record<string, Module<State, any>>
+export type Modules = Record<string, any>
 
 export default class Database {
   /**
    * The Vuex Store instance.
    */
-  store!: Store<any>
+  store!: any
 
   /**
    * The namespace for the Vuex Module. Vuex ORM will create Vuex Modules from the
@@ -59,7 +58,7 @@ export default class Database {
   /**
    * Initialize the database before a user can start using it.
    */
-  start(store: Store<any>, namespace: string): void {
+  start(store: any, namespace: string): void {
     this.store = store
     this.namespace = namespace
 
@@ -74,7 +73,7 @@ export default class Database {
   /**
    * Register a model and a module to Database.
    */
-  register(model: typeof Model, module: Module<any, any> = {}): void {
+  register(model: typeof Model, module: {[key: string]: any} = {}): void {
     this.checkModelTypeMappingCapability(model)
 
     const entity: Entity = {
@@ -161,7 +160,7 @@ export default class Database {
   /**
    * Get the module of the given name from the entities list.
    */
-  module(name: string): Module<any, any> {
+  module(name: string): {[key: string]: any} {
     const module = this.modules()[name]
 
     if (!module) {
@@ -217,7 +216,7 @@ export default class Database {
     }
 
     Object.defineProperty(proxy, 'store', {
-      value: (): Store<any> => this.store
+      value: (): any => this.store
     })
 
     return proxy
@@ -244,7 +243,7 @@ export default class Database {
   /**
    * Create Vuex Module from the registered entities.
    */
-  private createModule(): Module<any, any> {
+  private createModule(): {[key: string]: any} {
     const module = this.createRootModule()
 
     this.entities.forEach((entity) => {
@@ -303,7 +302,7 @@ export default class Database {
   /**
    * Create sub module.
    */
-  private createSubModule(entity: Entity): Module<any, any> {
+  private createSubModule(entity: Entity): {[key: string]: any} {
     return {
       namespaced: true,
       state: this.createSubState(entity),
@@ -350,7 +349,7 @@ export default class Database {
   /**
    * Create sub mutations.
    */
-  private createSubMutations(entity: Entity): MutationTree<any> {
+  private createSubMutations(entity: Entity): any {
     return entity.module.mutations ?? {}
   }
 

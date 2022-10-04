@@ -1,9 +1,6 @@
-import './types/vuex'
 import './polyfills'
 
-import install, { Install } from './store/install'
 import use, { Use, PluginComponents } from './plugins/use'
-import Container from './container/Container'
 import Database from './database/Database'
 import Model from './model/Model'
 import Fields from './model/contracts/Fields'
@@ -49,9 +46,9 @@ import Collection from './data/Collection'
 import Collections from './data/Collections'
 
 export interface VuexORM {
-  install: Install
+  install: any
   use: Use
-  Container: typeof Container
+  Container: any
   Database: typeof Database
   Model: typeof Model
   Attribute: typeof Attribute
@@ -82,10 +79,8 @@ export interface VuexORM {
 }
 
 export {
-  install,
   use,
   PluginComponents,
-  Container,
   Database,
   Model,
   Fields,
@@ -127,9 +122,7 @@ export {
 }
 
 export default {
-  install,
   use,
-  Container,
   Database,
   Model,
   Attribute,

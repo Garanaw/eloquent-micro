@@ -1,4 +1,3 @@
-import { Store } from 'vuex'
 import Item from '../data/Item'
 import Collection from '../data/Collection'
 import Collections from '../data/Collections'
@@ -8,16 +7,16 @@ import ActionsContract from './contracts/RootActions'
 import ActionContext from './contracts/RootActionContext'
 import OptionsBuilder from './support/OptionsBuilder'
 import * as Payloads from './payloads/RootActions'
+import Database from '@/database/Database';
 
 /**
  * Create new data with all fields filled by default values.
  */
 async function newRecord(
-  this: Store<any>,
   _context: ActionContext,
   payload: Payloads.New
 ): Promise<Model> {
-  return new Query(this, payload.entity).new()
+  return new Query(payload.entity).new()
 }
 
 /**
@@ -26,7 +25,6 @@ async function newRecord(
  * use the `insert` method instead.
  */
 async function create(
-  this: Store<any>,
   _context: ActionContext,
   payload: Payloads.Create
 ): Promise<Collections> {
@@ -34,7 +32,7 @@ async function create(
   const data = payload.data
   const options = OptionsBuilder.createPersistOptions(payload)
 
-  return new Query(this, entity).create(data, options)
+  return new Query(entity).create(data, options)
 }
 
 /**
@@ -43,7 +41,6 @@ async function create(
  * with the same primary key.
  */
 async function insert(
-  this: Store<any>,
   _context: ActionContext,
   payload: Payloads.Insert
 ): Promise<Collections> {
@@ -51,14 +48,13 @@ async function insert(
   const data = payload.data
   const options = OptionsBuilder.createPersistOptions(payload)
 
-  return new Query(this, entity).insert(data, options)
+  return new Query(entity).insert(data, options)
 }
 
 /**
  * Update data in the store.
  */
 async function update(
-  this: Store<any>,
   _context: ActionContext,
   payload: Payloads.Update
 ): Promise<Item | Collection | Collections> {
@@ -67,7 +63,7 @@ async function update(
   const where = payload.where || null
   const options = OptionsBuilder.createPersistOptions(payload)
 
-  return new Query(this, entity).update(data, where, options)
+  return new Query(entity).update(data, where, options)
 }
 
 /**
@@ -76,7 +72,6 @@ async function update(
  * the submitted data with the same primary key.
  */
 async function insertOrUpdate(
-  this: Store<any>,
   _context: ActionContext,
   payload: Payloads.InsertOrUpdate
 ): Promise<Collections> {
@@ -84,7 +79,7 @@ async function insertOrUpdate(
   const data = payload.data
   const options = OptionsBuilder.createPersistOptions(payload)
 
-  return new Query(this, entity).insertOrUpdate(data, options)
+  return new Query(entity).insertOrUpdate(data, options)
 }
 
 /**
@@ -93,40 +88,36 @@ async function insertOrUpdate(
  * scope level.
  */
 async function destroy(
-  this: Store<any>,
   _context: ActionContext,
   payload: Payloads.DeleteById
 ): Promise<Item>
 async function destroy(
-  this: Store<any>,
   _context: ActionContext,
   payload: Payloads.DeleteByCondition
 ): Promise<Collection>
 async function destroy(
-  this: Store<any>,
   _context: ActionContext,
   payload: any
 ): Promise<any> {
   const { entity, where } = payload
 
-  return new Query(this, entity).delete(where)
+  return new Query(entity).delete(where)
 }
 
 /**
  * Delete all data from the store.
  */
 async function deleteAll(
-  this: Store<any>,
   _context: ActionContext,
   payload?: Payloads.DeleteAll
 ): Promise<void> {
   if (payload && payload.entity) {
-    new Query(this, payload.entity).deleteAll()
+    new Query(payload.entity).deleteAll()
 
     return
   }
 
-  Query.deleteAll(this)
+  Query.deleteAll(new Database());
 }
 
 const RootActions: ActionsContract = {
