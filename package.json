@@ -24,12 +24,7 @@
     "docs": "vuepress dev docs",
     "docs:build": "vuepress build docs",
     "docs:deploy": "bash ./docs/deploy.sh",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "release": "node scripts/release.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/vuex-orm/vuex-orm.git"
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },
   "keywords": [
     "vue",
@@ -38,10 +33,12 @@
     "eloquent-micro"
   ],
   "author": "Kia Ishii",
+  "contributors": [
+    {
+      "name": "Pablo Villalba"
+    }
+  ],
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/vuex-orm/vuex-orm/issues"
-  },
   "dependencies": {
     "normalizr": "^3.6.0"
   },
