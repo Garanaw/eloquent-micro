@@ -1,15 +1,12 @@
 {
   "name": "eloquent-micro",
   "version": "1.0.0",
-  "description": "The Vuex plugin to enable Object-Relational Mapping access to the Vuex Store.",
+  "description": "Fork of the Vuex-ORM library, without the Vuex dependency.",
   "main": "dist/vue-orm.cjs.js",
   "browser": "dist/vue-orm.esm.js",
   "module": "dist/vue-orm.esm-bundler.js",
   "unpkg": "dist/vue-orm.global.js",
   "typings": "dist/src/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "node scripts/build.js",
     "clean": "rm -rf dist && rm -rf dist && rm -rf coverage && rm -rf .nyc_output && rm -rf .tmp",
