@@ -17,18 +17,11 @@ interface SortableArray<T> {
 }
 
 /**
- * Check if the given value is the type of array.
- */
-export function isArray(value: any): value is any[] {
-  return Array.isArray(value)
-}
-
-/**
  * Gets the size of collection by returning its length for array-like values
  * or the number of own enumerable string keyed properties for objects.
  */
 export function size(collection: any[] | object): number {
-  return isArray(collection)
+  return Array.isArray(collection)
     ? collection.length
     : Object.keys(collection).length
 }
@@ -251,7 +244,7 @@ export function cloneDeep<T extends object>(target: T): T {
     return target
   }
 
-  if (isArray(target)) {
+  if (Array.isArray(target)) {
     const cp = [] as any[]
     ;(target as any[]).forEach((v) => cp.push(v))
 
@@ -272,7 +265,6 @@ export function cloneDeep<T extends object>(target: T): T {
 }
 
 export default {
-  isArray,
   size,
   isEmpty,
   forOwn,

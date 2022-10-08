@@ -1,5 +1,4 @@
 import { schema } from 'normalizr'
-import { isArray } from '../support/Utils'
 import Uid from '../support/Uid'
 import Record from '../data/Record'
 import UidAttribute from '../attributes/types/Uid'
@@ -25,7 +24,7 @@ export default class IdAttribute {
    * UID for it.
    */
   private static generateIds(record: Record, model: typeof Model): void {
-    const keys = isArray(model.primaryKey)
+    const keys = Array.isArray(model.primaryKey)
       ? model.primaryKey
       : [model.primaryKey]
 

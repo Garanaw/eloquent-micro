@@ -21,9 +21,6 @@
     "test:perf:watch": "jest --testPathIgnorePatterns test/{feature,unit} --watch",
     "test:all": "jest",
     "coverage": "jest --testPathIgnorePatterns test/performance --collect-coverage",
-    "docs": "vuepress dev docs",
-    "docs:build": "vuepress build docs",
-    "docs:deploy": "bash ./docs/deploy.sh",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },
   "keywords": [

@@ -1,4 +1,3 @@
-import { isArray } from '../../support/Utils'
 import Collection from '../../data/Collection'
 import Relation from '../../attributes/relations/Relation'
 import Constraint from '../contracts/RelationshipConstraint'
@@ -21,7 +20,7 @@ export default class Loader {
     }
 
     // If we passed an array, we dispatch the bits to with queries.
-    if (isArray(name)) {
+    if (Array.isArray(name)) {
       name.forEach((relationName) => this.with(query, relationName, constraint))
 
       return
