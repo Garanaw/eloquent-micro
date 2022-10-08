@@ -1,5 +1,4 @@
 import { Schema as NormalizrSchema } from 'normalizr'
-import { isArray } from '../../support/Utils'
 import Schema from '../../schema/Schema'
 import { Record, Records, NormalizedData, Collection } from '../../data'
 import Model from '../../model/Model'
@@ -135,11 +134,7 @@ export default abstract class Relation extends Attribute {
    * Check if the given record is a single relation, which is an object.
    */
   isOneRelation(record: any): boolean {
-    if (!isArray(record) && record !== null && typeof record === 'object') {
-      return true
-    }
-
-    return false
+    return !Array.isArray(record) && record !== null && typeof record === 'object';
   }
 
   /**
@@ -147,15 +142,11 @@ export default abstract class Relation extends Attribute {
    * of object.
    */
   isManyRelation(records: any): boolean {
-    if (!isArray(records)) {
+    if (!Array.isArray(records)) {
       return false
     }
 
-    if (records.length < 1) {
-      return false
-    }
-
-    return true
+    return records.length >= 1;
   }
 
   /**
