@@ -19,7 +19,7 @@ import ModelState from './contracts/State';
 import InheritanceTypes from './contracts/InheritanceTypes';
 import { toAttributes, toJson } from './Serialize';
 import Mixin from '../support/Mixin';
-import HasAttributes from '@/attributes/concerns/HasAttributes';
+import HasAttributes from '../attributes/concerns/HasAttributes';
 
 class Model {
   /**
