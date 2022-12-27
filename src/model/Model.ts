@@ -20,8 +20,16 @@ import InheritanceTypes from './contracts/InheritanceTypes';
 import { toAttributes, toJson } from './Serialize';
 import Mixin from '../support/Mixin';
 import HasAttributes from '../attributes/concerns/HasAttributes';
+import ConnectionResolverInterface from '../database/ConnectionResolverInterface';
+import ConnectionInterface from '../database/ConnectionInterface';
 
-class Model {
+class Model
+{
+  // @ts-ignore
+  protected $connection: string|null;
+
+  protected static $resolver: ConnectionResolverInterface;
+
   /**
    * The Database instance.
    */
@@ -762,6 +770,32 @@ class Model {
    */
   static hydrate(record?: Record): Record {
     return new this(record).$getAttributes()
+  }
+
+  public getConnection(): ConnectionInterface {
+    return Model.resolveConnection(this.getConnectionName());
+  }
+
+  public getConnectionName(): string|null {
+    return this.$connection;
+  }
+
+  public setConnection(name: string|null): this {
+    this.$connection = name;
+
+    return this;
+  }
+
+  public static resolveConnection($connection: string|null): ConnectionInterface {
+    return Model.$resolver.connection($connection);
+  }
+
+  public static getConnectionResolver(): ConnectionResolverInterface {
+    return Model.$resolver;
+  }
+
+  public static setConnectionResolver(resolver: ConnectionResolverInterface): void {
+    Model.$resolver = resolver;
   }
 
   /**
