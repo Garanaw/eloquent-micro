@@ -1,4 +1,4 @@
-import ConnectionResolverInterface from '@/database/ConnectionResolverInterface';
+import ConnectionResolverInterface from './ConnectionResolverInterface';
 import ConnectionInterface from './ConnectionInterface';
 
 export default class ConnectionResolver implements ConnectionResolverInterface
