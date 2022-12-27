@@ -1,25 +1,35 @@
-import Utils from '../support/Utils'
-import Uid from '../support/Uid'
-import Database from '../database/Database'
-import Record from '../data/Record'
-import InstanceOf from '../data/InstanceOf'
-import Item from '../data/Item'
-import Collection from '../data/Collection'
-import Collections from '../data/Collections'
-import State from '../modules/contracts/State'
-import * as Attributes from '../attributes'
-import Mutator from '../attributes/contracts/Mutator'
-import Mutators from '../attributes/contracts/Mutators'
-import Predicate from '../query/contracts/Predicate'
-import Query from '../query/Query'
-import * as Payloads from '../modules/payloads/Actions'
-import Fields from './contracts/Fields'
-import FieldCache from './contracts/FieldCache'
-import ModelState from './contracts/State'
-import InheritanceTypes from './contracts/InheritanceTypes'
-import { toAttributes, toJson } from './Serialize'
+import Utils from '../support/Utils';
+import Uid from '../support/Uid';
+import Database from '../database/Database';
+import Record from '../data/Record';
+import InstanceOf from '../data/InstanceOf';
+import Item from '../data/Item';
+import Collection from '../data/Collection';
+import Collections from '../data/Collections';
+import State from '../modules/contracts/State';
+import * as Attributes from '../attributes';
+import Mutator from '../attributes/contracts/Mutator';
+import Mutators from '../attributes/contracts/Mutators';
+import Predicate from '../query/contracts/Predicate';
+import Query from '../query/Query';
+import * as Payloads from '../modules/payloads/Actions';
+import Fields from './contracts/Fields';
+import FieldCache from './contracts/FieldCache';
+import ModelState from './contracts/State';
+import InheritanceTypes from './contracts/InheritanceTypes';
+import { toAttributes, toJson } from './Serialize';
+import Mixin from '../support/Mixin';
+import HasAttributes from '../attributes/concerns/HasAttributes';
+import ConnectionResolverInterface from '../database/ConnectionResolverInterface';
+import ConnectionInterface from '../database/ConnectionInterface';
 
-export default class Model {
+class Model
+{
+  // @ts-ignore
+  protected $connection: string|null;
+
+  protected static $resolver: ConnectionResolverInterface;
+
   /**
    * The Database instance.
    */
@@ -64,6 +74,8 @@ export default class Model {
    * Create a new model instance.
    */
   constructor(record?: Record) {
+    this.syncOriginal();
+
     this.$fill(record)
   }
 
@@ -529,7 +541,7 @@ export default class Model {
    * in the composite key.
    */
   static isPrimaryKey(key: string): boolean {
-    if (!Utils.isArray(this.primaryKey)) {
+    if (!Array.isArray(this.primaryKey)) {
       return this.primaryKey === key
     }
 
@@ -540,7 +552,7 @@ export default class Model {
    * Check if the primary key is a composite key.
    */
   static isCompositePrimaryKey(): boolean {
-    return Utils.isArray(this.primaryKey)
+    return Array.isArray(this.primaryKey)
   }
 
   /**
@@ -608,7 +620,7 @@ export default class Model {
       return null
     }
 
-    if (Utils.isArray(id)) {
+    if (Array.isArray(id)) {
       return JSON.stringify(id)
     }
 
@@ -760,6 +772,32 @@ export default class Model {
     return new this(record).$getAttributes()
   }
 
+  public getConnection(): ConnectionInterface {
+    return Model.resolveConnection(this.getConnectionName());
+  }
+
+  public getConnectionName(): string|null {
+    return this.$connection;
+  }
+
+  public setConnection(name: string|null): this {
+    this.$connection = name;
+
+    return this;
+  }
+
+  public static resolveConnection($connection: string|null): ConnectionInterface {
+    return Model.$resolver.connection($connection);
+  }
+
+  public static getConnectionResolver(): ConnectionResolverInterface {
+    return Model.$resolver;
+  }
+
+  public static setConnectionResolver(resolver: ConnectionResolverInterface): void {
+    Model.$resolver = resolver;
+  }
+
   /**
    * Get the constructor of this model.
    */
@@ -864,7 +902,7 @@ export default class Model {
    * Update records.
    */
   async $update(payload: Payloads.Update): Promise<Collections> {
-    if (Utils.isArray(payload)) {
+    if (Array.isArray(payload)) {
       return this.$dispatch('update', payload)
     }
 
@@ -918,7 +956,7 @@ export default class Model {
   async $delete(): Promise<Item<this>> {
     const primaryKey = this.$primaryKey()
 
-    if (!Utils.isArray(primaryKey)) {
+    if (!Array.isArray(primaryKey)) {
       return this.$dispatch('delete', this[primaryKey])
     }
 
@@ -965,7 +1003,7 @@ export default class Model {
    */
   $generatePrimaryId(): this {
     const key = this.$self().primaryKey
-    const keys = Utils.isArray(key) ? key : [key]
+    const keys = Array.isArray(key) ? key : [key]
 
     keys.forEach((k) => {
       if (this[k] === undefined || this[k] === null) {
@@ -1006,3 +1044,9 @@ export default class Model {
     return toJson(this)
   }
 }
+
+interface Model extends HasAttributes {};
+
+Mixin(Model, HasAttributes);
+
+export default Model;
