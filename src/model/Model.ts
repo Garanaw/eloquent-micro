@@ -23,7 +23,7 @@ import HasAttributes from '../attributes/concerns/HasAttributes';
 import ConnectionResolverInterface from '../database/ConnectionResolverInterface';
 import ConnectionInterface from '../database/ConnectionInterface';
 
-class Model
+abstract class Model
 {
   // @ts-ignore
   protected $connection: string|null;
@@ -76,7 +76,7 @@ class Model
   constructor(record?: Record) {
     this.syncOriginal();
 
-    this.$fill(record)
+    this.fill(record)
   }
 
   /**
@@ -769,6 +769,7 @@ class Model
    * in the model schema.
    */
   static hydrate(record?: Record): Record {
+    // @ts-ignore
     return new this(record).$getAttributes()
   }
 
@@ -945,7 +946,7 @@ class Model
 
     const records = await this.$dispatch('insertOrUpdate', { data: record })
 
-    this.$fill(records[this.$self().entity][0])
+    this.fill(records[this.$self().entity][0])
 
     return this
   }
@@ -977,7 +978,7 @@ class Model
    * or if the record has any missing fields, each value of the fields will
    * be filled with its default value defined at model fields definition.
    */
-  $fill(record: Record = {}): void {
+  public fill(record: Record = {}): void {
     const fields = this.$fields()
 
     for (const key in fields) {
