@@ -1,6 +1,10 @@
+import Builder from './query/Builder';
+
 export default interface ConnectionInterface
 {
   table($table: string, $as?: string|null): unknown;
+
+  query(): Builder;
 
   selectOne($query: string, $bindings: unknown[]): unknown;
 
