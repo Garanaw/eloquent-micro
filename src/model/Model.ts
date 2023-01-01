@@ -22,6 +22,8 @@ import Mixin from '../support/Mixin';
 import HasAttributes from '../attributes/concerns/HasAttributes';
 import ConnectionResolverInterface from '../database/ConnectionResolverInterface';
 import ConnectionInterface from '../database/ConnectionInterface';
+import EloquentBuilder from '../database/eloquent/Builder';
+import QueryBuilder from '../database/query/Builder';
 
 abstract class Model
 {
@@ -29,6 +31,12 @@ abstract class Model
   protected $connection: string|null;
 
   protected static $resolver: ConnectionResolverInterface;
+
+  protected $primaryKey: string = 'id';
+
+  protected $keyType: string = 'int';
+
+  protected $with: string[] = [];
 
   /**
    * The Database instance.
@@ -448,11 +456,45 @@ abstract class Model
     return this.getters('findIn')(idList)
   }
 
-  /**
-   * Get query instance.
-   */
-  static query<T extends typeof Model>(this: T): Query<InstanceOf<T>> {
-    return this.getters('query')()
+  public static query() {
+    // @ts-ignore
+    return new this().newQuery();
+  }
+
+  public newQuery() {
+    return this.registerGlobalScopes(this.newQueryWithoutScopes());
+  }
+
+  public newModelQuery(): EloquentBuilder {
+      return this.newEloquentBuilder(
+          this.newBaseQueryBuilder()
+      ).setModel(this);
+  }
+
+  public newQueryWithoutRelationships(): EloquentBuilder {
+    return this.registerGlobalScopes(this.newModelQuery());
+  }
+
+  // TODO: Add scopes
+  public registerGlobalScopes(builder: EloquentBuilder) {
+    return builder;
+  }
+
+  public newQueryWithoutScopes(): EloquentBuilder {
+    return this.newModelQuery()
+      .with(this.$with || {});
+  }
+
+  public newEloquentBuilder($query: QueryBuilder): EloquentBuilder {
+    return new EloquentBuilder($query);
+  }
+
+  public newBaseQueryBuilder(): QueryBuilder {
+    return this.getConnection().query();
+  }
+
+  public newCollection(models: any[]): Collection {
+    return models;
   }
 
   /**
@@ -806,11 +848,32 @@ abstract class Model
     return this.constructor as typeof Model
   }
 
-  /**
-   * Get the primary key for the model.
-   */
-  $primaryKey(): string | string[] {
-    return this.$self().primaryKey
+  public getKeyName(): string {
+    return this.$primaryKey;
+  }
+
+  public setKeyName(key: string): this {
+    this.$primaryKey = key;
+
+    return this;
+  }
+
+  public getQualifiedKeyName(): string {
+    return this.qualifyColumn(this.getKeyName());
+  }
+
+  public getKeyType(): string {
+    return this.$keyType;
+  }
+
+  public setKeyType(keyType: string): this {
+    this.$keyType = keyType;
+
+    return this;
+  }
+
+  public getKey(): any {
+    return this.getAttribute(this.getKeyName())
   }
 
   /**
@@ -955,7 +1018,7 @@ abstract class Model
    * Delete records that matches the given condition.
    */
   async $delete(): Promise<Item<this>> {
-    const primaryKey = this.$primaryKey()
+    const primaryKey = this.$primaryKey
 
     if (!Array.isArray(primaryKey)) {
       return this.$dispatch('delete', this[primaryKey])
@@ -990,6 +1053,10 @@ abstract class Model
 
     // If the record contains index id, set it to the model.
     record.$id !== undefined && this.$setIndexId(record.$id)
+  }
+
+  public qualifyColumn(column: string): string {
+    return column;
   }
 
   /**
@@ -1046,7 +1113,7 @@ abstract class Model
   }
 }
 
-interface Model extends HasAttributes {};
+interface Model extends HasAttributes {}
 
 Mixin(Model, HasAttributes);
 
