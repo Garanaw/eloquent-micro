@@ -1,4 +1,4 @@
-import Builder from './query/Builder';
+import Builder from '../attributes/contracts/database/query/Builder';
 
 export default interface ConnectionInterface
 {

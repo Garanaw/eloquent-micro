@@ -1,68 +1,85 @@
 import Record from '../data/Record'
 import Records from '../data/Records'
-// import RootState from '../modules/contracts/RootState'
-// import State from '../modules/contracts/State'
+import ConnectionInterface from '../database/ConnectionInterface';
+import Builder from '../database/query/Builder';
+import QueryGrammar from '../database/query/grammars/Grammar';
+import Processor from '../database/query/processors/Processor';
 
-export default class Connection {
-  /**
-   * The connection name.
-   */
-  connection: string
+export default class Connection implements ConnectionInterface {
 
-  /**
-   * The entity name.
-   */
-  entity: string
+  protected $database: string;
 
-  /**
-   * The root state.
-   */
-  //rootState: RootState
+  protected $prefix: string;
 
-  /**
-   * The entity state.
-   */
-  //state: State
+  protected $config: Record = {};
 
-  /**
-   * Create a new connection instance.
-   */
-  constructor(connection: string, entity: string) {
-    this.connection = connection
-    this.entity = entity
-    // this.rootState = new RootState()
-    // this.state = this.rootState[entity]
+  protected $queryGrammar: unknown;
+
+  protected $postProcessor: unknown;
+
+  constructor(database: string, prefix: string, config: Record) {
+    this.$database = database;
+    this.$prefix = prefix;
+
+    this.$config = config;
+
+    this.useDefaultQueryGrammar();
+
+    this.useDefaultPostProcessor();
   }
 
-  /**
-   * Insert the given record.
-   */
+  public useDefaultQueryGrammar(): void {
+    this.$queryGrammar = this.getDefaultQueryGrammar();
+  }
+
+  protected getDefaultQueryGrammar(): QueryGrammar {
+    return new QueryGrammar();
+  }
+
+  public useDefaultPostProcessor(): void {
+    this.$postProcessor = this.getDefaultPostProcessor();
+  }
+
+  protected getDefaultPostProcessor(): Processor {
+    return new Processor();
+  }
+
   // @ts-ignore
   insert(record: Record): void {
-    //this.state.data = { ...this.state.data, [record.$id]: record }
+
   }
 
-  /**
-   * Insert the given records.
-   */
   // @ts-ignore
   insertRecords(records: Records): void {
-    //this.state.data = { ...this.state.data, ...records }
+
   }
 
-  /**
-   * Delete records that matches the given id.
-   */
   // @ts-ignore
   delete(id: string[]): void {
-    // const data: Records = {}
-    //
-    // for (const i in this.state.data) {
-    //   if (!id.includes(i)) {
-    //     data[i] = this.state.data[i]
-    //   }
-    // }
-    //
-    // this.state.data = data
+
+  }
+
+  table($table: string, $as?: string | null): unknown {
+    return this.query().from($table, $as);
+  }
+
+  query(): Builder {
+    // @ts-ignore
+    return new Builder(this);
+  }
+
+  // @ts-ignore
+  select($query: string, $bindings: unknown[]): unknown {
+    return undefined;
+  }
+
+  // @ts-ignore
+  selectOne($query: string, $bindings: unknown[]): unknown {
+    return undefined;
+  }
+
+  // @ts-ignore
+  update($query: string, $bindings: unknown[]): unknown {
+    return undefined;
   }
 }

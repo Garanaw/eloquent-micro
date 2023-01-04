@@ -59,6 +59,12 @@ export default class Builder implements BuilderContract
     return this;
   }
 
+  public from(table: string, as: string|null = null): this {
+    this.$from = as ? `${table} as ${as}` : table;
+
+    return this;
+  }
+
   protected createSub($query: Builder|EloquentBuilder|Function|string): any[] {
     if ($query instanceof Function) {
       const $callback: Function = $query;
