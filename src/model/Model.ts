@@ -490,7 +490,7 @@ abstract class Model
   }
 
   public newBaseQueryBuilder(): QueryBuilder {
-    return this.getConnection().query();
+    return <QueryBuilder>this.getConnection().query();
   }
 
   public newCollection(models: any[]): Collection {

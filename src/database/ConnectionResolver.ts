@@ -3,22 +3,22 @@ import ConnectionInterface from './ConnectionInterface';
 
 export default class ConnectionResolver implements ConnectionResolverInterface
 {
-  protected $connections: Record<string, ConnectionInterface>|[] = [];
+  protected $connections: Record<string, ConnectionInterface> = {};
 
   protected $default: string = '';
 
-  constructor($connections: Record<string, ConnectionInterface>|[] = []) {
+  constructor($connections: Record<string, ConnectionInterface> = {}) {
     for (let $connection in $connections) {
       this.addConnection($connection, $connections[$connection]);
     }
   }
 
-  connection($name?: string): ConnectionInterface {
+  connection($name: string|null = null): ConnectionInterface {
     if ($name === null) {
       $name = this.getDefaultConnection();
     }
 
-    return this.$connections[$name as string];
+    return this.$connections[$name];
   }
 
   addConnection($name: string, $connection: ConnectionInterface): void {
